@@ -14,3 +14,9 @@ def __init__(self, content):
         self.descendent=None
         self.fitness_h=None
         self.nspecie=None
+
+#@property
+#         def params(self):
+#         l=len(self)+4
+#         p=np.ones(l)
+#         return p
