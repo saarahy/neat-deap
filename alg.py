@@ -142,11 +142,12 @@ def eaSimple(population, toolbox, cxpb, mutpb, ngen, neat_alg, neat_cx, neat_h,n
 
     #Crear la matriz para llenar los datos
     num_r=7
-    num_c=(cont_evalf/num_salto)
+    num_c=(cont_evalf/num_salto)+1
     Matrix = np.empty((num_c, num_r,))
-    vector=np.arange(1,cont_evalf+1, num_salto)
+    vector=np.arange(1,cont_evalf+num_salto, num_salto)
     for i in range(len(vector)):
         Matrix[i,0]=vector[i]
+    Matrix[:,num_r-1]=0.
 
     #asignar especies en cada individuo en la poblacion
     if neat_alg:
@@ -345,13 +346,23 @@ def eaSimple(population, toolbox, cxpb, mutpb, ngen, neat_alg, neat_cx, neat_h,n
         fitnesst_best= toolbox.map(toolbox.evaluate_test, [cd])
         best.write('\n%s;%s;%s;%s'%(gen, funcEval.cont_evalp,fitnesst_best[0], mejor.fitness.values[0]))
 
-        idx_aux=np.searchsorted(Matrix[:,0], funcEval.cont_evalp)
-        Matrix[idx_aux, 1] = mejor.fitness.values[0]
-        Matrix[idx_aux, 2] = fitnesst_best[0][0]
-        Matrix[idx_aux, 3] = len(mejor)
-        Matrix[idx_aux, 4] = avg_nodes(population)
-        Matrix[idx_aux, 5] = gen
-        Matrix[idx_aux, 6] = 1 #indicador de que esa columna se lleno
+        if funcEval.cont_evalp>=cont_evalf:
+            num_c=num_c-1
+            Matrix[num_c, 1] = mejor.fitness.values[0]
+            Matrix[num_c, 2] = fitnesst_best[0][0]
+            Matrix[num_c, 3] = len(mejor)
+            Matrix[num_c, 4] = avg_nodes(population)
+            Matrix[num_c, 5] = gen
+            Matrix[num_c, 6] = 1 #indicador de que esa columna se lleno
+        else:
+            idx_aux=np.searchsorted(Matrix[:,0], funcEval.cont_evalp)
+            Matrix[idx_aux, 1] = mejor.fitness.values[0]
+            Matrix[idx_aux, 2] = fitnesst_best[0][0]
+            Matrix[idx_aux, 3] = len(mejor)
+            Matrix[idx_aux, 4] = avg_nodes(population)
+            Matrix[idx_aux, 5] = gen
+            Matrix[idx_aux, 6] = 1 #indicador de que esa columna se lleno
+
 
         id_it=idx_aux-1
         id_beg=0
